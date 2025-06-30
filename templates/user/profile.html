@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+
+{% block content %}
+    <h1>{{ user.username }}'s Profile</h1>
+    <p><strong>Bio:</strong> {{ user.bio if user.bio else "No bio provided." }}</p>
+    <p><strong>Joined On:</strong> {{ user.joined_on.strftime('%Y-%m-%d %H:%M') }}</p>
+
+    {% if current_user and current_user.id == user.id %}
+        <p><a href="{{ url_for('main.edit_profile', user_id=user.id) }}">Edit My Profile</a></p>
+    {% elif current_user %}
+        <p><a href="{{ url_for('messages.send_message', receiver_id=user.id) }}">Send Message to {{ user.username }}</a></p>
+    {% endif %}
+
+    <p><button onclick="getVibe({{ user.id }})">Get Vibe Check!</button></p>
+    <p id="vibeResult"></p>
+
+    <script>
+        function getVibe(userId) {
+            fetch(`/api/vibe_check/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('vibeResult').innerText = 'Current Vibe: ' + data.vibe;
+                })
+                .catch(error => {
+                    console.error('Error fetching vibe:', error);
+                    document.getElementById('vibeResult').innerText = 'Failed to get vibe.';
+                });
+        }
+    </script>
+{% endblock %}
