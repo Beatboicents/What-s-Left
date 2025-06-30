@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Inbox{% endblock %}
+
+{% block content %}
+    <h1>Your Inbox</h1>
+
+    <h2>Received Messages:</h2>
+    {% if received_messages %}
+        <ul>
+            {% for msg in received_messages %}
+                <li class="message-box">
+                    <div class="message-sender">From: <a href="{{ url_for('main.profile', user_id=msg.sender.id) }}">{{ msg.sender.username }}</a></div>
+                    <div class="message-content">{{ msg.content }}</div>
+                    <div class="message-timestamp">{{ msg.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    <div><a href="{{ url_for('messages.conversation', other_user_id=msg.sender.id) }}">View Conversation</a></div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No messages received yet.</p>
+    {% endif %}
+
+    <h2>Sent Messages:</h2>
+    {% if sent_messages %}
+        <ul>
+            {% for msg in sent_messages %}
+                <li class="message-box">
+                    <div class="message-receiver">To: <a href="{{ url_for('main.profile', user_id=msg.receiver.id) }}">{{ msg.receiver.username }}</a></div>
+                    <div class="message-content">{{ msg.content }}</div>
+                    <div class="message-timestamp">{{ msg.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    <div><a href="{{ url_for('messages.conversation', other_user_id=msg.receiver.id) }}">View Conversation</a></div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No messages sent yet.</p>
+    {% endif %}
+{% endblock %}
