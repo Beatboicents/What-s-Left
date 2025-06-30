@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Conversation with {{ other_user.username }}{% endblock %}
+
+{% block content %}
+    <h1>Conversation with {{ other_user.username }}</h1>
+
+    <div class="conversation-log">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="message-box">
+                    {% if msg.sender_id == current_user.id %}
+                        <div class="message-sender">You said:</div>
+                    {% else %}
+                        <div class="message-receiver">{{ other_user.username }} said:</div>
+                    {% endif %}
+                    <div class="message-content">{{ msg.content }}</div>
+                    <div class="message-timestamp">{{ msg.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No messages in this conversation yet. Start one!</p>
+        {% endif %}
+    </div>
+
+    <h2>Reply to {{ other_user.username }}</h2>
+    <form method="POST" action="{{ url_for('messages.reply_to_conversation', other_user_id=other_user.id) }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.content.label }}<br>
+            {{ form.content(cols=60, rows=5) }}
+            {% for error in form.content.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+{% endblock %}
